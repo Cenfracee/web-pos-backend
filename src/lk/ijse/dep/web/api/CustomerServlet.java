@@ -103,7 +103,15 @@ public class CustomerServlet extends HttpServlet {
     //Delete
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+        String id = request.getParameter("id");
+        BasicDataSource connectionPool = (BasicDataSource) getServletContext().getAttribute("theConnectionPool");
+        try (Connection connection = connectionPool.getConnection()){
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM Customer WHERE id=?");
+            preparedStatement.setObject(1, id);
+            preparedStatement.executeUpdate();
+        }catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 
 }

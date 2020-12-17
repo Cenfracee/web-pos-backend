@@ -19,12 +19,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet(name = "CustomerServlet",urlPatterns ="/customer" )
+@WebServlet(name = "CustomerServlet", urlPatterns = "/customer")
 public class CustomerServlet extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+    //Create
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+       // super.doPut(request, response);
+        response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
     }
 
+    //Read
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         BasicDataSource connectionPool = (BasicDataSource) getServletContext().getAttribute("theConnectionPool");
         response.setContentType("application/json");
@@ -51,6 +57,18 @@ public class CustomerServlet extends HttpServlet {
         }
 
 
-
     }
+
+    //Update
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        BasicDataSource connectionPool = (BasicDataSource) getServletContext().getAttribute("theConnectionPool");
+    }
+
+    //Delete
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+    }
+
 }

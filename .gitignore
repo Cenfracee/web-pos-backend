@@ -1,0 +1,26 @@
+# IntelliJ IDE files
+.idea/
+*.iml
+
+# Production artifacts
+out/
+
+# lib contains 4 directories, 13 files which are dipendancies of the project
+lib/
+#├── commons-logging
+#│  ├── commons-logging-1.2.jar
+#│  └── commons-logging-1.2-javadoc.jar
+#├── commons-pool
+#│  ├── commons-pool2-2.9.0.jar
+#│  ├── commons-pool2-2.9.0-javadoc.jar
+#│  └── commons-pool2-2.9.0-sources.jar
+#├── dbcp
+#│  ├── commons-dbcp2-2.8.0.jar
+#│  ├── commons-dbcp2-2.8.0-javadoc.jar
+#│  └── commons-dbcp2-2.8.0-sources.jar
+#├── JasonB
+#│  ├── jakarta.json-2.0.0.jar
+#│  ├── jakarta.json-api-2.0.0.jar
+#│  ├── jakarta.json.bind-api-2.0.0.jar
+#│  └── yasson-2.0.1.jar
+#└── mysql-connector-java-8.0.22.jar

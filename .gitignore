@@ -5,7 +5,7 @@
 # Production artifacts
 out/
 
-# lib contains 4 directories, 13 files which are dipendancies of the project
+# lib contains 4 directories, 13 files which are dependancies of the project
 lib/
 #├── commons-logging
 #│  ├── commons-logging-1.2.jar

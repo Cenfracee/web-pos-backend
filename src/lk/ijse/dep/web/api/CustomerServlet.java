@@ -25,8 +25,24 @@ public class CustomerServlet extends HttpServlet {
     //Create
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-       // super.doPut(request, response);
-        response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+        BasicDataSource connectionPool = (BasicDataSource) getServletContext().getAttribute("theConnectionPool");
+        try (Connection connection = connectionPool.getConnection()) {
+            Customer customer;
+
+            String id = request.getParameter("id");
+            String name = request.getParameter("name");
+            String address = request.getParameter("address");
+            customer = new Customer(id,name,address);
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE Customer SET name=?, address=? WHERE id=?");
+            preparedStatement.setObject(1, name);
+            preparedStatement.setObject(2, address);
+            preparedStatement.setObject(3, id);
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
     }
 
     //Read
@@ -37,8 +53,8 @@ public class CustomerServlet extends HttpServlet {
 
         try (Connection connection = connectionPool.getConnection()){
             PrintWriter out = response.getWriter();
-            PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Customer");
-            ResultSet resultSet = pstm.executeQuery();
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM Customer");
+            ResultSet resultSet = preparedStatement.executeQuery();
             List<Customer> customersList = new ArrayList<>();
             while (resultSet.next()) {
                 String id = resultSet.getString(1);

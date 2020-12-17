@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet(name = "CustomerServlet", urlPatterns = "/customer")
+@WebServlet(name = "CustomerServlet", urlPatterns = "/customers")
 public class CustomerServlet extends HttpServlet {
 
     //Create
@@ -35,9 +35,7 @@ public class CustomerServlet extends HttpServlet {
         BasicDataSource connectionPool = (BasicDataSource) getServletContext().getAttribute("theConnectionPool");
         response.setContentType("application/json");
 
-        Connection connection = null;
-        try {
-            connection = connectionPool.getConnection();
+        try (Connection connection = connectionPool.getConnection()){
             PrintWriter out = response.getWriter();
             PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Customer");
             ResultSet resultSet = pstm.executeQuery();
@@ -63,6 +61,27 @@ public class CustomerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         BasicDataSource connectionPool = (BasicDataSource) getServletContext().getAttribute("theConnectionPool");
+        try (Connection connection = connectionPool.getConnection()){
+            Customer customer;
+
+                String id = request.getParameter("id");
+                String name = request.getParameter("name");
+                String address = request.getParameter("address");
+                customer = new Customer(id,name,address);
+
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO Customer VALUES (?,?,?)");
+            preparedStatement.setString(1, customer.getId());
+            preparedStatement.setString(2, customer.getName());
+            preparedStatement.setString(3, customer.getAddress());
+            if (preparedStatement.executeUpdate() > 0) {
+                response.setStatus(HttpServletResponse.SC_CREATED);
+            } else {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
+        }catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
     }
 
     //Delete

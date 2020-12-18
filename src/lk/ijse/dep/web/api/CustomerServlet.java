@@ -32,13 +32,12 @@ public class CustomerServlet extends HttpServlet {
             String id = request.getParameter("id");
             String name = request.getParameter("name");
             String address = request.getParameter("address");
-            customer = new Customer(id,name,address);
+            customer = new Customer(id, name, address);
             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE Customer SET name=?, address=? WHERE id=?");
             preparedStatement.setObject(1, name);
             preparedStatement.setObject(2, address);
             preparedStatement.setObject(3, id);
             preparedStatement.executeUpdate();
-
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -50,8 +49,7 @@ public class CustomerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         BasicDataSource connectionPool = (BasicDataSource) getServletContext().getAttribute("theConnectionPool");
         response.setContentType("application/json");
-
-        try (Connection connection = connectionPool.getConnection()){
+        try (Connection connection = connectionPool.getConnection()) {
             PrintWriter out = response.getWriter();
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM Customer");
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -65,7 +63,6 @@ public class CustomerServlet extends HttpServlet {
             Jsonb jsonb = JsonbBuilder.create();
             out.println(jsonb.toJson(customersList));
             connection.close();
-            response.setContentType("text/html");
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -77,13 +74,13 @@ public class CustomerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         BasicDataSource connectionPool = (BasicDataSource) getServletContext().getAttribute("theConnectionPool");
-        try (Connection connection = connectionPool.getConnection()){
+        try (Connection connection = connectionPool.getConnection()) {
             Customer customer;
 
-                String id = request.getParameter("id");
-                String name = request.getParameter("name");
-                String address = request.getParameter("address");
-                customer = new Customer(id,name,address);
+            String id = request.getParameter("id");
+            String name = request.getParameter("name");
+            String address = request.getParameter("address");
+            customer = new Customer(id, name, address);
 
             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO Customer VALUES (?,?,?)");
             preparedStatement.setString(1, customer.getId());
@@ -94,7 +91,7 @@ public class CustomerServlet extends HttpServlet {
             } else {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
-        }catch (SQLException throwables) {
+        } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
 
@@ -105,13 +102,18 @@ public class CustomerServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("id");
         BasicDataSource connectionPool = (BasicDataSource) getServletContext().getAttribute("theConnectionPool");
-        try (Connection connection = connectionPool.getConnection()){
+        try (Connection connection = connectionPool.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM Customer WHERE id=?");
             preparedStatement.setObject(1, id);
             preparedStatement.executeUpdate();
-        }catch (SQLException throwables) {
+        } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
 
+
+    @Override
+    protected void doHead(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+    }
 }

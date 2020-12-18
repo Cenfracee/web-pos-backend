@@ -19,6 +19,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static lk.ijse.dep.web.functions.Validation.validateCustomer;
+
 @WebServlet(name = "CustomerServlet", urlPatterns = "/customers")
 public class CustomerServlet extends HttpServlet {
 
@@ -28,11 +30,15 @@ public class CustomerServlet extends HttpServlet {
         BasicDataSource connectionPool = (BasicDataSource) getServletContext().getAttribute("theConnectionPool");
         try (Connection connection = connectionPool.getConnection()) {
             Customer customer;
-
             String id = request.getParameter("id");
             String name = request.getParameter("name");
             String address = request.getParameter("address");
-            customer = new Customer(id, name, address);
+            if (!validateCustomer(id, name, address)) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            } else {
+                customer = new Customer(id, name, address);
+            }
             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE Customer SET name=?, address=? WHERE id=?");
             preparedStatement.setObject(1, name);
             preparedStatement.setObject(2, address);
@@ -43,6 +49,7 @@ public class CustomerServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
+
 
     //Read
     @Override
@@ -65,6 +72,7 @@ public class CustomerServlet extends HttpServlet {
             connection.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
 
@@ -76,11 +84,15 @@ public class CustomerServlet extends HttpServlet {
         BasicDataSource connectionPool = (BasicDataSource) getServletContext().getAttribute("theConnectionPool");
         try (Connection connection = connectionPool.getConnection()) {
             Customer customer;
-
             String id = request.getParameter("id");
             String name = request.getParameter("name");
             String address = request.getParameter("address");
-            customer = new Customer(id, name, address);
+            if (!validateCustomer(id, name, address)) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            } else {
+                customer = new Customer(id, name, address);
+            }
 
             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO Customer VALUES (?,?,?)");
             preparedStatement.setString(1, customer.getId());
@@ -93,6 +105,7 @@ public class CustomerServlet extends HttpServlet {
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -101,6 +114,10 @@ public class CustomerServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("id");
+        if (id.trim().isEmpty() || !id.matches("C\\d{3}")) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
         BasicDataSource connectionPool = (BasicDataSource) getServletContext().getAttribute("theConnectionPool");
         try (Connection connection = connectionPool.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM Customer WHERE id=?");
@@ -108,6 +125,7 @@ public class CustomerServlet extends HttpServlet {
             preparedStatement.executeUpdate();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 

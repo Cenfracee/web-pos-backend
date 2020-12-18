@@ -13,5 +13,16 @@ public class Validation {
         }
     }
 
+    public static boolean validateItem(String id, String name, String address) {
+        if (id.trim().isEmpty() || !id.matches("I\\d{3}")) {
+            return false;
+        } else if (name.trim().isEmpty()) {
+            return false;
+        } else if (address.trim().isEmpty()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
 }

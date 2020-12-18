@@ -43,7 +43,12 @@ public class CustomerServlet extends HttpServlet {
             preparedStatement.setObject(1, name);
             preparedStatement.setObject(2, address);
             preparedStatement.setObject(3, id);
-            preparedStatement.executeUpdate();
+            boolean success =preparedStatement.executeUpdate()>0;
+            if (success) {
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            } else {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -56,17 +61,19 @@ public class CustomerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         BasicDataSource connectionPool = (BasicDataSource) getServletContext().getAttribute("theConnectionPool");
         response.setContentType("application/json");
+        String id = request.getParameter("id");
         try (Connection connection = connectionPool.getConnection()) {
             PrintWriter out = response.getWriter();
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM Customer");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM Customer" + ((id != null) ? " WHERE id=?" : ""));
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Customer> customersList = new ArrayList<>();
             while (resultSet.next()) {
-                String id = resultSet.getString(1);
+                id = resultSet.getString(1);
                 String name = resultSet.getString(2);
                 String address = resultSet.getString(3);
                 customersList.add(new Customer(id, name, address));
             }
+
             Jsonb jsonb = JsonbBuilder.create();
             out.println(jsonb.toJson(customersList));
             connection.close();
@@ -122,7 +129,12 @@ public class CustomerServlet extends HttpServlet {
         try (Connection connection = connectionPool.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM Customer WHERE id=?");
             preparedStatement.setObject(1, id);
-            preparedStatement.executeUpdate();
+            boolean success =preparedStatement.executeUpdate()>0;
+            if (success) {
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            } else {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

@@ -2,7 +2,6 @@ package lk.ijse.dep.web.api;
 
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
-import lk.ijse.dep.web.model.Customer;
 import lk.ijse.dep.web.model.Item;
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -42,7 +41,7 @@ public class ItemServlet extends HttpServlet {
             } else {
                 item = new Item(code, description, qtyOnHand, unitPrice);
             }
-            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE Item SET description=?, qtyOnHand=?, unitPrice=? WHERE code=?");
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE Item SET description=?, qtyOnHand=?, unitPrice=? WHERE code=?create table Item(	description varchar(100) null,	qtyOnHand int null,	unitPrice double null,	code varchar(10) null);create unique index Item_code_uindex	on Item (code);alter table Item	add constraint Item_pk		primary key (code);");
             preparedStatement.setObject(1, description);
             preparedStatement.setObject(2, qtyOnHand);
             preparedStatement.setObject(3, unitPrice);
